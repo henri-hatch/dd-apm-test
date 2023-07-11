@@ -34,9 +34,6 @@ func PingPong(ctx *gin.Context) {
 }
 
 func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
-	// Start a span
-	tracer.Start()
-	defer tracer.Stop()
 	// Submit a custom metric
 	ddlambda.Metric(
 		"test.ppm_metric",                  // Metric name
@@ -48,6 +45,9 @@ func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (eve
 }
 
 func main() {
+	// Start the tracing
+	tracer.Start()
+	defer tracer.Stop()
 	// Wrap the handler function with Datadog Lambda Wrapper
 	lambda.Start(ddlambda.WrapFunction(HandleRequest, nil))
 }
