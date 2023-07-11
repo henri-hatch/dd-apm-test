@@ -22,7 +22,7 @@ var ginLambda *ginadapter.GinLambdaV2
 func init() {
 	r := gin.Default()
 	r.Use(gintrace.Middleware("apm-test"))
-	r.GET("/ping", PingPong)
+	r.GET("/v1/ping", PingPong)
 
 	ginLambda = ginadapter.NewV2(r)
 }
