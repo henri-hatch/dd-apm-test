@@ -19,6 +19,20 @@ import (
 
 var ginLambda *ginadapter.GinLambdaV2
 
+func init() {
+	r := gin.Default()
+	r.Use(gintrace.Middleware("apm-test"))
+	r.GET("/ping", PingPong)
+
+	ginLambda = ginadapter.NewV2(r)
+}
+
+func PingPong(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "pong",
+	})
+}
+
 func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	// Start a span
 	tracer.Start()
@@ -34,14 +48,6 @@ func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (eve
 }
 
 func main() {
-	r := gin.Default()
-	r.Use(gintrace.Middleware("apm-test"))
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
-
-	ginLambda = ginadapter.NewV2(r)
-
 	// Wrap the handler function with Datadog Lambda Wrapper
 	lambda.Start(ddlambda.WrapFunction(HandleRequest, nil))
 }
