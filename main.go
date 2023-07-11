@@ -20,6 +20,9 @@ import (
 var ginLambda *ginadapter.GinLambdaV2
 
 func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+	// Start a span
+	tracer.Start()
+	defer tracer.Stop()
 	// Submit a custom metric
 	ddlambda.Metric(
 		"test.ppm_metric",                  // Metric name
@@ -31,9 +34,6 @@ func HandleRequest(ctx context.Context, req events.APIGatewayV2HTTPRequest) (eve
 }
 
 func main() {
-	tracer.Start()
-	defer tracer.Stop()
-
 	r := gin.Default()
 	r.Use(gintrace.Middleware("apm-test"))
 	r.GET("/ping", func(c *gin.Context) {
