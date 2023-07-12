@@ -9,7 +9,6 @@ import (
 
 	ddlambda "github.com/DataDog/datadog-lambda-go"
 
-	gintrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gin-gonic/gin"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,6 @@ var ginLambda *ginadapter.GinLambdaV2
 
 func init() {
 	r := gin.Default()
-	r.Use(gintrace.Middleware("apm-test"))
 	r.GET("/v1/ping", PingPong)
 
 	ginLambda = ginadapter.NewV2(r)
